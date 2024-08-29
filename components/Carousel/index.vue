@@ -14,12 +14,12 @@
       <div v-if="props.navigation" class="embla__buttons">
         <button type="button"
           :class="twMerge(carousel_classes?.button_class, props.layout === 'vertical' ? carousel_classes?.vertical?.prev_button_class : carousel_classes?.prev_button_class, prev_btn_disabled && carousel_classes.disabled_button_class)"
-          @click="onPrevButtonClick" :disabled="prev_btn_disabled">
+          @click="handlePrevButtonClick" :disabled="prev_btn_disabled">
           <Icon class="text-xl" name="uil:angle-left-b" />
         </button>
         <button type="button"
           :class="twMerge(carousel_classes?.button_class, props.layout === 'vertical' ? carousel_classes?.vertical?.next_button_class : carousel_classes?.next_button_class, next_btn_disabled && carousel_classes.disabled_button_class)"
-          @click="onNextButtonClick" :disabled="next_btn_disabled">
+          @click="handleNextButtonClick" :disabled="next_btn_disabled">
           <Icon class="text-xl" name="uil:angle-right-b" />
         </button>
       </div>
@@ -32,7 +32,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from "vue";
+import { ref, computed, onMounted } from "vue";
 import { twMerge } from "tailwind-merge";
 import emblaCarouselVue from "embla-carousel-vue";
 import Autoplay from "embla-carousel-autoplay";
@@ -53,9 +53,10 @@ type Props = {
 
 // Define props with default values
 const props = withDefaults(defineProps<Props>(), {
-  layout: "vertical",
+  layout: "horizontal",
   options: () => ({}),
   active: true,
+  axix: "x",
   navigation: true,
   pagination: true
 });
@@ -85,14 +86,12 @@ const scroll_snaps = ref();
 const prev_btn_disabled = ref(true);
 const next_btn_disabled = ref(true);
 
-const onPrevButtonClick = () => {
-  if (!emblaApi) return
-  emblaApi?.value?.scrollPrev();
+const handlePrevButtonClick = () => {
+  scrollPrev(emblaApi);
 }
 
-const onNextButtonClick = () => {
-  if (!emblaApi) return
-  emblaApi?.value?.scrollNext();
+const handleNextButtonClick = () => {
+  scrollNext(emblaApi);
 }
 
 const onDotButtonClick = (index: number) => {
@@ -130,22 +129,11 @@ const carousel_classes: Record<any, any> = {
   },
 };
 
-// Debug code start
-watch(selected_index, (newValue, oldValue) => {
-  console.log(`Selected index changed from ${oldValue} to ${newValue}`);
-})
-// Debug code end
-
 onMounted(() => {
   if (emblaApi.value) {
     onInit();
     onSelect();
     emblaApi.value.on("reInit", onInit).on("reInit", onSelect).on("select", onSelect)
   }
-
-  // Debug code start
-  console.log(scroll_snaps.value)
-  // Debug code end
 });
 </script>
-
