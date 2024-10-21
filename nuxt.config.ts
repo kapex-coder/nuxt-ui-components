@@ -7,5 +7,10 @@ export default defineNuxtConfig({
       builderPublicApiKey: '',
     }
   },
-  modules: ["@nuxtjs/tailwindcss", "@nuxt/icon", "@builder.io/sdk-vue/nuxt"],
+  modules: [
+    "@nuxtjs/tailwindcss",
+    "@nuxt/icon",
+    "@builder.io/sdk-vue/nuxt",
+    "@nuxt/image",
+  ],
 });
