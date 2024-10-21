@@ -1,8 +1,11 @@
 <template>
   <div :class="twMerge(carousel_classes?.root_class)">
     <div :class="twMerge(carousel_classes?.viewport_class)" ref="emblaRef">
-      <div
-        :class="twMerge(carousel_classes?.container_class, props.layout === 'vertical' && carousel_classes?.vertical?.container_class)">
+      <div :class="twMerge(
+        carousel_classes?.container_class,
+        props.layout === 'vertical' && carousel_classes?.vertical?.container_class
+      )
+        ">
         <slot>
           <CarouselSlide>Slide 1</CarouselSlide>
           <CarouselSlide>Slide 2</CarouselSlide>
@@ -12,42 +15,56 @@
     </div>
     <div v-if="props.navigation || props.pagination" class="embla__controls">
       <div v-if="props.navigation" class="embla__buttons">
-        <button type="button"
-          :class="twMerge(carousel_classes?.button_class, props.layout === 'vertical' ? carousel_classes?.vertical?.prev_button_class : carousel_classes?.prev_button_class, prev_btn_disabled && carousel_classes.disabled_button_class)"
-          @click="handlePrevButtonClick" :disabled="prev_btn_disabled">
+        <button type="button" :class="twMerge(
+          carousel_classes?.button_class,
+          props.layout === 'vertical'
+            ? carousel_classes?.vertical?.prev_button_class
+            : carousel_classes?.prev_button_class,
+          prev_btn_disabled && carousel_classes.disabled_button_class
+        )
+          " @click="handlePrevButtonClick" :disabled="prev_btn_disabled">
           <Icon class="text-xl" name="uil:angle-left-b" />
         </button>
-        <button type="button"
-          :class="twMerge(carousel_classes?.button_class, props.layout === 'vertical' ? carousel_classes?.vertical?.next_button_class : carousel_classes?.next_button_class, next_btn_disabled && carousel_classes.disabled_button_class)"
-          @click="handleNextButtonClick" :disabled="next_btn_disabled">
+        <button type="button" :class="twMerge(
+          carousel_classes?.button_class,
+          props.layout === 'vertical'
+            ? carousel_classes?.vertical?.next_button_class
+            : carousel_classes?.next_button_class,
+          next_btn_disabled && carousel_classes.disabled_button_class
+        )
+          " @click="handleNextButtonClick" :disabled="next_btn_disabled">
           <Icon class="text-xl" name="uil:angle-right-b" />
         </button>
       </div>
       <div v-if="props.pagination && props.layout !== 'vertical'" class="embla__dots flex justify-center gap-1">
         <button v-for="(snap, index) in scroll_snaps" :key="snap" type="button" @click="() => onDotButtonClick(index)"
-          :class="twMerge('h-2 w-2 border rounded-full', selected_index === index && 'border-red-500')"></button>
+          :class="twMerge(
+            'h-2 w-2 border rounded-full',
+            selected_index === index && 'border-red-500'
+          )
+            "></button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
 import { twMerge } from "tailwind-merge";
 import emblaCarouselVue from "embla-carousel-vue";
 import Autoplay from "embla-carousel-autoplay";
+import { type EmblaOptionsType } from "embla-carousel";
 
 // Props types
 type Props = {
   layout?: "horizontal" | "vertical";
   navigation?: boolean;
   pagination?: boolean;
-  options?: object;
+  options?: EmblaOptionsType;
   active?: boolean;
   axis?: "x" | "y";
   align?: "start" | "center" | "end";
   breakpoints?: object;
-  loop?: boolean;
+  loop?: boolean | undefined;
   autoplay?: boolean;
 };
 
@@ -58,16 +75,16 @@ const props = withDefaults(defineProps<Props>(), {
   active: true,
   axix: "x",
   navigation: true,
-  pagination: true
+  pagination: true,
 });
 
 // Carousel Options
-const options = computed(() => ({
+const options = computed<EmblaOptionsType>(() => ({
   ...props.options,
   ...(!props.active && { active: false }),
   ...(props.align && { align: props.align }),
-  ...(props.layout === 'vertical' && { axis: "y" }),
-  ...(props.loop && { loop: true })
+  ...(props.layout === "vertical" && { axis: "y" }),
+  ...(props.loop && { loop: true }),
 }));
 
 // Carousel Plugins
@@ -88,22 +105,22 @@ const next_btn_disabled = ref(true);
 
 const handlePrevButtonClick = () => {
   scrollPrev(emblaApi);
-}
+};
 
 const handleNextButtonClick = () => {
   scrollNext(emblaApi);
-}
+};
 
 const onDotButtonClick = (index: number) => {
-  if (!emblaApi) return
-  emblaApi?.value?.scrollTo(index)
-}
+  if (!emblaApi) return;
+  emblaApi?.value?.scrollTo(index);
+};
 
 const onInit = () => {
   if (emblaApi.value) {
-    scroll_snaps.value = emblaApi.value.scrollSnapList()
+    scroll_snaps.value = emblaApi.value.scrollSnapList();
   }
-}
+};
 
 const onSelect = () => {
   if (emblaApi.value) {
@@ -111,21 +128,24 @@ const onSelect = () => {
     prev_btn_disabled.value = !emblaApi.value.canScrollPrev();
     next_btn_disabled.value = !emblaApi.value.canScrollNext();
   }
-}
+};
 
 // Carousel classes
 const carousel_classes: Record<any, any> = {
   root_class: "embla relative group",
   viewport_class: "embla__viewport overflow-hidden",
   container_class: "embla__container flex",
-  button_class: "embla__button bg-white border h-8 w-8 rounded-full flex items-center justify-center transition-all duration-500 absolute opacity-0 group-hover:opacity-100",
+  button_class:
+    "embla__button bg-white border h-8 w-8 rounded-full flex items-center justify-center transition-all duration-500 absolute opacity-0 group-hover:opacity-100",
   disabled_button_class: "bg-gray-200",
-  prev_button_class: "embla__button--prev top-1/2 left-0 -translate-y-1/2 group-hover:-translate-x-1/2",
-  next_button_class: "embla__button--next top-1/2 right-0 -translate-y-1/2 group-hover:translate-x-1/2",
+  prev_button_class:
+    "embla__button--prev top-1/2 left-0 -translate-y-1/2 group-hover:-translate-x-1/2",
+  next_button_class:
+    "embla__button--next top-1/2 right-0 -translate-y-1/2 group-hover:translate-x-1/2",
   vertical: {
-    container_class: 'flex-col h-[200px]',
+    container_class: "flex-col h-[200px]",
     prev_button_class: "left-1/2 top-0 -translate-x-1/2 group-hover:-translate-y-1/2",
-    next_button_class: "left-1/2 bottom-0 -translate-x-1/2 group-hover:translate-y-1/2"
+    next_button_class: "left-1/2 bottom-0 -translate-x-1/2 group-hover:translate-y-1/2",
   },
 };
 
@@ -133,7 +153,7 @@ onMounted(() => {
   if (emblaApi.value) {
     onInit();
     onSelect();
-    emblaApi.value.on("reInit", onInit).on("reInit", onSelect).on("select", onSelect)
+    emblaApi.value.on("reInit", onInit).on("reInit", onSelect).on("select", onSelect);
   }
 });
 </script>
