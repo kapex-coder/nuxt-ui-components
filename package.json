@@ -10,6 +10,7 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@builder.io/sdk-vue": "^2.0.22",
     "@nuxt/icon": "^1.4.10",
     "@nuxtjs/tailwindcss": "^6.12.1",
     "embla-carousel": "^8.2.0",
